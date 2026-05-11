@@ -1,5 +1,5 @@
 export default function Page() {
 	return (
-		<h1>Hello app root!</h1>
+		<h1>Hello login!</h1>
 	);
 }
