@@ -5,11 +5,15 @@ const authClient = createAuthClient();
 
 export default function Page() {
 	return (
-		<>
-			<h1>Hello login!</h1>
-			<button onClick={() => authClient.signIn.social({provider: "google",})}>
-				Login With Google 
-			</button>
-		</>
+		<div className="flex">
+			<section className="flex flex-col">
+				<h1>StrokeStats</h1>
+				<article className="border rounded-md p-2">
+					<button onClick={() => authClient.signIn.social({provider: "google",})}>
+						Login With Google 
+					</button>
+				</article>
+			</section>
+		</div>
 	);
 }
