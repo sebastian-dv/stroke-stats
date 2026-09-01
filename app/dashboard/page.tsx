@@ -1,10 +1,8 @@
 "use client"
 
-import { createAuthClient } from "better-auth/react"
+import { signOut } from "@/lib/auth-client"
 import Button from "@/components/Button"
 import { useRouter } from "next/navigation"
-
-const { signOut } = createAuthClient()
 
 export default function Page() {
     const router = useRouter();
