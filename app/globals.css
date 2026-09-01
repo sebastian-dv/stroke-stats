@@ -1,1 +1,11 @@
 @import "tailwindcss";
+
+@theme {
+  --color-rough: #1a3d2b;
+  --color-fairway: #2d5a3d;
+  --color-card: #e8f5e2;
+  --color-text-dark: #1b3a2d;
+  --color-text-muted: #4a7c59;
+  --color-bunker: #c8a96e;
+  --color-water: #a8c5da;
+}
