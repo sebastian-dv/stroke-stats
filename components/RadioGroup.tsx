@@ -1,10 +1,12 @@
 interface RadioGroupProps<T extends number | string> {
   options: { label: string; value: T }[]
-  value: T
+  value: T | null
   onChange: (value: T) => void
+  // if provided, clicking the selected option deselects it
+  onClear?: () => void
 }
 
-export default function RadioGroup<T extends number | string>({ options, value, onChange }: RadioGroupProps<T>) {
+export default function RadioGroup<T extends number | string>({ options, value, onChange, onClear }: RadioGroupProps<T>) {
   return (
     <div className="flex gap-2">
       {options.map(option => (
@@ -22,6 +24,9 @@ export default function RadioGroup<T extends number | string>({ options, value, 
             value={option.value}
             checked={value === option.value}
             onChange={() => onChange(option.value)}
+            onClick={() => {
+              if (onClear && value === option.value) onClear()
+            }}
           />
           {option.label}
         </label>

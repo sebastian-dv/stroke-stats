@@ -9,8 +9,18 @@ import type { CourseEntry, HoleEntry as HoleEntryData } from "./types"
 export default function Page() {
     const [course, setCourse] = useState<CourseEntry | null>(null)
     const [holes, setHoles] = useState<HoleEntryData[]>([])
+    // index into holes of the hole being entered
+    const [currentHole, setCurrentHole] = useState(0)
 
-    const roundFinished = course !== null && holes.length === course.numHoles
+    const roundFinished = course !== null && currentHole === course.numHoles
+
+    function saveHole(hole: HoleEntryData) {
+        setHoles(prev => {
+            const next = [...prev]
+            next[currentHole] = hole
+            return next
+        })
+    }
 
     return (
         <div>
@@ -22,10 +32,18 @@ export default function Page() {
                         <RoundSummary course={course} holes={holes} />
                     ) : (
                         <HoleEntry
-                            key={holes.length}
+                            key={currentHole}
                             course={course}
-                            holeNumber={holes.length + 1}
-                            onSubmit={hole => setHoles(prev => [...prev, hole])}
+                            holeNumber={currentHole + 1}
+                            initial={holes[currentHole]}
+                            onSubmit={hole => {
+                                saveHole(hole)
+                                setCurrentHole(prev => prev + 1)
+                            }}
+                            onPrev={hole => {
+                                if (hole) saveHole(hole)
+                                setCurrentHole(prev => prev - 1)
+                            }}
                         />
                     )}
                 </section>

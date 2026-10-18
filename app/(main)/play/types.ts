@@ -2,11 +2,11 @@ export interface HoleEntry {
   holeNumber: number
   par: number
   score: number
-  putts: number
-  chips: number
-  penalties: number
-  fairwayHit: boolean
-  greenInReg: boolean
+  putts: number | null
+  chips: number | null
+  penalties: number | null
+  fairwayHit: boolean | null
+  greenInReg: boolean | null
 }
 
 export interface CourseEntry {
