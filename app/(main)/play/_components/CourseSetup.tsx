@@ -67,6 +67,7 @@ export default function CourseSetup({ onStart }: CourseSetupProps) {
 
             <Button
                 onClick={() => onStart({ courseName, par: coursePar, numHoles })}
+                disabled={!courseName}
             >
                 Start Round
             </Button>
