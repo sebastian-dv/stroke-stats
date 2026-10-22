@@ -3,18 +3,19 @@
 import { useState } from "react"
 import CourseSetup from "./_components/CourseSetup"
 import HoleEntry from "./_components/HoleEntry"
-import RoundSummary from "./_components/RoundSummary"
+import Scorecard from "./_components/Scorecard"
 import type { CourseEntry, HoleEntry as HoleEntryData } from "./types"
 
 export default function Page() {
     const [course, setCourse] = useState<CourseEntry | null>(null)
-    const [holes, setHoles] = useState<HoleEntryData[]>([])
+    // one slot per hole, null until that hole has been entered
+    const [holes, setHoles] = useState<(HoleEntryData | null)[]>([])
     // index into holes of the hole being entered
     const [currentHole, setCurrentHole] = useState(0)
+    const [showScorecard, setShowScorecard] = useState(false)
 
-    const roundFinished = course !== null && currentHole === course.numHoles
-
-    function saveHole(hole: HoleEntryData) {
+    function saveHole(hole: HoleEntryData | null) {
+        if (!hole) return
         setHoles(prev => {
             const next = [...prev]
             next[currentHole] = hole
@@ -27,22 +28,34 @@ export default function Page() {
             <div className="max-w-2xl mx-auto px-4 py-6">
                 <section className="bg-card rounded-2xl shadow-2xl p-6 mb-8">
                     {course === null ? (
-                        <CourseSetup onStart={setCourse} />
-                    ) : roundFinished ? (
-                        <RoundSummary course={course} holes={holes} />
+                        <CourseSetup
+                            onStart={course => {
+                                setCourse(course)
+                                setHoles(Array(course.numHoles).fill(null))
+                            }}
+                        />
+                    ) : showScorecard ? (
+                        <Scorecard
+                            course={course}
+                            holes={holes}
+                            onSelectHole={index => {
+                                setCurrentHole(index)
+                                setShowScorecard(false)
+                            }}
+                        />
                     ) : (
                         <HoleEntry
                             key={currentHole}
                             course={course}
                             holeNumber={currentHole + 1}
-                            initial={holes[currentHole]}
-                            onSubmit={hole => {
+                            initial={holes[currentHole] ?? undefined}
+                            onGoToHole={(hole, index) => {
                                 saveHole(hole)
-                                setCurrentHole(prev => prev + 1)
+                                setCurrentHole(index)
                             }}
-                            onPrev={hole => {
-                                if (hole) saveHole(hole)
-                                setCurrentHole(prev => prev - 1)
+                            onViewScorecard={hole => {
+                                saveHole(hole)
+                                setShowScorecard(true)
                             }}
                         />
                     )}

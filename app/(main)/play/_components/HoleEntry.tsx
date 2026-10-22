@@ -10,9 +10,9 @@ interface HoleEntryProps {
   holeNumber: number
   // previously saved data for this hole, when coming back to it
   initial?: HoleEntryData
-  onSubmit: (hole: HoleEntryData) => void
-  // receives the current hole if it has a score, so it isn't lost
-  onPrev: (hole: HoleEntryData | null) => void
+  // both receive the current hole if it has a score, so it isn't lost
+  onGoToHole: (hole: HoleEntryData | null, index: number) => void
+  onViewScorecard: (hole: HoleEntryData | null) => void
 }
 
 function toYesNo(val: boolean | null | undefined) {
@@ -47,7 +47,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
     )
 }
 
-export default function HoleEntry({ course, holeNumber, initial, onSubmit, onPrev }: HoleEntryProps) {
+export default function HoleEntry({ course, holeNumber, initial, onGoToHole, onViewScorecard }: HoleEntryProps) {
     const [par, setPar] = useState(initial?.par ?? 4)
     const [score, setScore] = useState<number | null>(initial?.score ?? null)
     const [putts, setPutts] = useState<number | null>(initial?.putts ?? null)
@@ -70,11 +70,38 @@ export default function HoleEntry({ course, holeNumber, initial, onSubmit, onPre
         }
     }
 
+    // index into holes is holeNumber - 1
+    const prevArrow = (
+        <Button
+            variant="secondary"
+            disabled={holeNumber === 1}
+            onClick={() => onGoToHole(buildHole(), holeNumber - 2)}
+            className="w-12! px-0! shrink-0"
+        >
+            &lt;
+        </Button>
+    )
+
+    const nextArrow = (
+        <Button
+            variant="secondary"
+            disabled={holeNumber === course.numHoles}
+            onClick={() => onGoToHole(buildHole(), holeNumber)}
+            className="w-12! px-0! shrink-0"
+        >
+            &gt;
+        </Button>
+    )
+
     return (
         <>
-            <h1 className="text-2xl font-bold text-text-dark mb-3">
-                Hole {holeNumber} of {course.numHoles}
-            </h1>
+            <div className="flex items-center justify-between gap-3 mb-3">
+                {prevArrow}
+                <h1 className="text-2xl font-bold text-text-dark text-center">
+                    Hole {holeNumber} of {course.numHoles}
+                </h1>
+                {nextArrow}
+            </div>
 
             <Field label="Par">
                 <RadioGroup
@@ -113,23 +140,12 @@ export default function HoleEntry({ course, holeNumber, initial, onSubmit, onPre
                 <RadioGroup options={yesNo} value={greenInReg} onChange={setGreenInReg} onClear={() => setGreenInReg(null)} />
             </Field>
 
-            <div className="flex gap-3">
-                <Button 
-                    variant="secondary" 
-                    disabled={holeNumber === 1}
-                    onClick={() => onPrev(buildHole())}
-                >
-                    Prev Hole
+            <div className="flex gap-3 items-center">
+                {prevArrow}
+                <Button onClick={() => onViewScorecard(buildHole())}>
+                    View Scorecard
                 </Button>
-                <Button
-                    disabled={score === null}
-                    onClick={() => {
-                        const hole = buildHole()
-                        if (hole) onSubmit(hole)
-                    }}
-                >
-                    {holeNumber === course.numHoles ? "Finish Round" : "Next Hole"}
-                </Button>
+                {nextArrow}
             </div>
         </>
     )
